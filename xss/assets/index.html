@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<body>
+  {{$name := index .name 0}}
+  <div>
+    Hello {{$name}}!
+  </div>
+  {{if (eq $name "Anonymous")}}
+  <form>
+    <div>Want to tell us your real name?</div>
+    <input type="text" name="name">
+    <input type="submit" value="Send">
+  </form>
+  {{end}}
+</body>
+</html>
