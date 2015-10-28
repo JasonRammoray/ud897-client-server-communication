@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"bytes"
+	"flag"
+	"encoding/base64"
 	"io"
 	"log"
 	"net/http"
@@ -9,35 +12,56 @@ import (
 	"text/template"
 
 	"github.com/GeertJohan/go.rice"
-	"github.com/udacity/ud897-client-server-communication/utils"
 )
 
 //go:generate rice embed-go
 var (
-	box       = rice.MustFindBox("assets")
-	logserver = utils.Logserver{}
+	box = rice.MustFindBox("assets")
 )
 
 func main() {
-	log.Printf("Running logging server on logger.127.0.0.1.xip.io:8080")
-	log.Printf("Running bad website on badwebsite.127.0.0.1.xip.io:8080")
+	var (
+		port = flag.Int("port", 8080, "Port to listen on")
+	)
+	flag.Parse()
+
+	log.Printf("Running decoder server on decoder.127.0.0.1.xip.io:%d", *port)
+	log.Printf("Running bad website on badwebsite.127.0.0.1.xip.io:%d", *port)
 
 	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch strings.Split(r.Host, ":")[0] {
-		case "logger.127.0.0.1.xip.io":
-			logserver.ServeHTTP(w, r)
-		case "badwebsite.127.0.0.1.xip.io":
+		switch {
+		case strings.Contains(r.Host, "decoder"):
+			decodeServer(w, r)
+		case strings.Contains(r.Host, "badwebsite"):
 			badWebsite(w, r)
 		}
 	}))
-	http.ListenAndServe(":8080", nil)
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil); err != nil {
+		log.Fatalf("Could not start webserver on :%d: %s", *port, err)
+	}
+}
+
+var (
+	secret = "dAZxAgQAAHY="
+)
+
+func decodeServer(w http.ResponseWriter, r *http.Request) {
+	x := []byte(r.FormValue("key"))
+	y, _ := base64.StdEncoding.DecodeString(secret)
+	if len(x) > len(y) {
+		x = x[0:len(y)]
+	}
+	for i := range x {
+		x[i] = x[i] ^ y[i]
+	}
+	log.Printf("Result: %s", x)
 }
 
 func badWebsite(w http.ResponseWriter, r *http.Request) {
 	// Set the cookie that is supposed to be stolen
 	http.SetCookie(w, &http.Cookie{
 		Name:  "SESSION_ID",
-		Value: "3735928559",
+		Value: "DEADBEEF",
 	})
 
 	// Disable XSS protection because securitylol
