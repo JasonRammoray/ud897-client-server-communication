@@ -1,17 +1,15 @@
 package main
 
 import (
-	"fmt"
-	"bytes"
-	"flag"
 	"encoding/base64"
-	"io"
+	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
-	"text/template"
 
 	"github.com/GeertJohan/go.rice"
+	"github.com/udacity/ud897-client-server-communication/utils"
 )
 
 //go:generate rice embed-go
@@ -29,10 +27,11 @@ func main() {
 	log.Printf("Running bad website on badwebsite.127.0.0.1.xip.io:%d", *port)
 
 	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		hostname := strings.Split(r.Host, ":")[0]
 		switch {
-		case strings.Contains(r.Host, "decoder"):
+		case strings.HasPrefix(hostname, "decoder."):
 			decodeServer(w, r)
-		case strings.Contains(r.Host, "badwebsite"):
+		case strings.HasPrefix(hostname, "badwebsite."):
 			badWebsite(w, r)
 		}
 	}))
@@ -73,26 +72,10 @@ func badWebsite(w http.ResponseWriter, r *http.Request) {
 	}
 
 	key := r.URL.Path[1:]
-	if strings.HasSuffix("/", key) {
-		key += "index.html"
-	}
-	fileContents, err := box.String(key)
+	err := utils.ExecuteTemplateInBox(w, box, key, data)
 	if err != nil {
-		log.Printf("Could not find file %s", key)
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-	tpl, err := template.New("").Parse(fileContents)
-	if err != nil {
-		log.Printf("Could not parse template %s: %s", key, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		log.Printf("Error executing template: %s", err)
 		return
 	}
-	buf := &bytes.Buffer{}
-	if err := tpl.Execute(buf, data); err != nil {
-		log.Printf("Could not execute template %s: %s", key, err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-	io.Copy(w, buf)
 }

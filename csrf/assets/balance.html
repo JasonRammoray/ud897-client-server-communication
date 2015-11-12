@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<body>
+  <div id="history">
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Recepient</th>
+        <th>Amount</th>
+      </tr>
+      {{ range .Transfers }}
+      <tr>
+        <td>{{.Date}}</td>
+        <td>{{.Recipient}}</td>
+        <td>{{.Amount}}</td>
+      </tr>
+      {{ end }}
+    </table>
+  </div>
+  <form id="transfer" action="transfer" method="POST">
+    <h3>Transfer some money</h3>
+    <label>
+      Recipient:
+      <input type="text" placeholder="Recipient" name="recipient">
+    </label>
+    <label>
+      Amount:
+      <input type="number" name="amount">
+    </label>
+    <input type="submit" value="Send">
+  </form>
+  <a href="/logout">Logout</a>
+</body>
+</html>
