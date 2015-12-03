@@ -1,0 +1,24 @@
+<head>
+<style>
+  img {
+    border: 0;
+    padding: 0;
+    border: 0;
+  }
+</style>
+</head>
+<body>
+<script>
+  var size = 1024;
+  var tile = 32;
+  for(var y = 0; y < size/tile; y++) {
+    var row = document.createElement('div')
+    for(var x = 0; x < size/tile; x++) {
+      var img = document.createElement('img')
+      img.src = '/tile?x=' + x + '&y=' + y;
+      row.appendChild(img);
+    }
+    document.body.appendChild(row);
+  }
+</script>
+</body>
