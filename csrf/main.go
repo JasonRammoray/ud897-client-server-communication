@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"sync"
@@ -25,6 +26,7 @@ func main() {
 	log.Printf("Running bank website on bank.127.0.0.1.xip.io:8080")
 
 	bank := httptools.NewRegexpSwitch(map[string]http.Handler{
+		"/": http.RedirectHandler("/balance", http.StatusTemporaryRedirect),
 		"/transfer": httptools.MethodSwitch{
 			"POST": httptools.List{
 				httptools.SilentHandlerFunc(checkLogin),
@@ -93,6 +95,10 @@ func checkLogin(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+var (
+	secret = "setyourcorsheader"
+)
+
 func transfer(w http.ResponseWriter, r *http.Request) {
 	t := TransferAction{
 		Amount:    r.FormValue("amount"),
@@ -102,6 +108,12 @@ func transfer(w http.ResponseWriter, r *http.Request) {
 	acc.Lock()
 	defer acc.Unlock()
 	acc.Transfers = append(acc.Transfers, t)
+
+	refUrl, err := url.Parse(r.Referer())
+	if err == nil && strings.HasPrefix(refUrl.Host, "evil.") && t.Recipient == "Evil Corp" {
+		log.Printf("You made Evil Corp(tm) rich!")
+		log.Printf("The oken is >> %s <<", secret)
+	}
 	http.Redirect(w, r, "/balance", http.StatusSeeOther)
 }
 
