@@ -1,30 +1,38 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"time"
 )
 
-const successMessage = `HTTP/1.1 999 UDACITY EXERCISE SUCCES
-Date: %s
-Content-Type: application/udacity-exercise-token; charset=UTF-8
-Content-Length: 49
-Connection: close
+// Tokens have been generated with this JS snippet:
+//
+// crypto.subtle.digest("SHA-256", new TextEncoder("utf-8").encode(new Date().getTime().toString()))
+//   .then(x => new Uint8Array(x))
+//   .then(x => Array.from(x).map(x => x.toString(16)))
+//   .then(x => x.join(''))
+//   .then(x => console.log(x))
 
-Luckily, you don't need to do this stuff anymore!
-`
+const successToken = "ba16d08e117ea066a43cf1332d78b0324b993cdcc0bd72ea8827f26d3457a32e"
 
-var checks []func(r *http.Request) bool = []func(r *http.Request) bool{
-	func(r *http.Request) bool {
-		return r.Method == "OPTIONS"
+var checks []func(r *http.Request) string = []func(r *http.Request) string{
+	func(r *http.Request) string {
+		if r.Method == "UDACITY" {
+			return ""
+		}
+		return "8617c0f6c64d3d1a16858bc61236cd02e9ab7a3bb21df3dc796944eaa6f3bc"
 	},
-	func(r *http.Request) bool {
-		return r.Header.Get("X-Udacity-Exercise-Header") != ""
+	func(r *http.Request) string {
+		if r.Header.Get("X-Udacity-Exercise-Header") != "" {
+			return ""
+		}
+		return "3627cdf4dae75dff97584d8d84d3c8821335d23ee1d57cfbe0be2b1bd22a45"
 	},
-	func(r *http.Request) bool {
-		return r.Header.Get("Date") == "Wed, 11 Jan 1995 23:00:00 GMT"
+	func(r *http.Request) string {
+		if r.Header.Get("Date") == "Wed, 11 Jan 1995 23:00:00 GMT" {
+			return ""
+		}
+		return "8053172ec777c51169271a3fa49644be6a59eb174828e98c2fcb628beabb"
 	},
 }
 
@@ -32,29 +40,17 @@ func main() {
 	log.Printf("Running webserver on netcat.127.0.0.1.xip.io:8080")
 
 	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token := successToken
 		for _, f := range checks {
-			if !f(r) {
-				http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-				log.Printf("Request metadata did not match expectations")
-				return
+			if x := f(r); x!= "" {
+				w.Header().Set("X-No-Success", "true");
+				token = x
+				break;
 			}
 		}
-		hj, ok := w.(http.Hijacker)
-		if !ok {
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-			log.Printf("Error preparing for hijack")
-			return
-		}
-		c, buf, err := hj.Hijack()
-		if err != nil {
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-			log.Printf("Error hijacking connection: %s", err)
-			return
-		}
-		defer c.Close()
-		defer buf.Flush()
 
-		buf.Write([]byte(fmt.Sprintf(successMessage, time.Now().Format(time.RFC1123))))
+		w.Write([]byte(token))
+		w.Write([]byte("\n"))
 	}))
 	http.ListenAndServe(":8080", nil)
 }
