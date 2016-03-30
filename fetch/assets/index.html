@@ -1,0 +1,96 @@
+<!--
+Copyright 2016 Google Inc. All Rights Reserved.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+   http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!doctype html>
+<head>
+  <style>
+    :root {
+      font-family: monospace;
+      font-size: 20px;
+    }
+    .template {
+      display: none;
+    }
+    input, select, option {
+      font-family: monospace;
+      font-size: 1rem;
+    }
+    input {
+      border: 0;
+      border-bottom: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  fetch("<input type="text" id="url" placeholder="http://www.example.com">", {<br>
+  &nbsp;&nbsp;"method": "
+  <select id="method">
+    <option selected>GET</option>
+    <option>POST</option>
+    <option>PUT</option>
+    <option>PATCH</option>
+    <option>HEAD</option>
+    <option>OPTIONS</option>
+  </select>",<br>
+  &nbsp;&nbsp;"headers": {<br>
+    <div class="template header">
+      &nbsp;&nbsp;&nbsp;&nbsp;"<input type="text" placeholder="X-Forwarded-for">": "<input type="text" placeholder="Value">",
+      &nbsp;&nbsp;&nbsp;&nbsp;<button>-</button><br>
+    </div>
+    <div>
+    &nbsp;&nbsp;&nbsp;&nbsp;<button id="addheader">+</button>
+    </div>
+    &nbsp;&nbsp;}<br>
+  });<br>
+  <div>
+    <button id="send">Send Request</button>
+  </div><br>
+  <br>
+  Response:<br>
+  <pre></pre>
+  <script src="fetch.js"></script>
+  <script>
+    (function() {
+      var $ = document.querySelector.bind(document);
+      var output = $('pre');
+      var deleteHeaderFunc = function(ev) {
+        ev.target.parentElement.parentElement.removeChild(ev.target.parentElement);
+      };
+      $('#addheader').addEventListener('click', function(ev) {
+        var n = $('.header.template').cloneNode(true);
+        n.classList.remove('template');
+        n.querySelector('button').addEventListener('click', deleteHeaderFunc);
+        ev.target.parentElement.parentElement.insertBefore(n, ev.target.parentElement);
+      });
+      $('#send').addEventListener('click', function() {
+        var headers = {};
+        Array.prototype.forEach.call(document.querySelectorAll('.header:not(.template)'), function(fields) {
+          var header = fields.querySelector('input:nth-of-type(1)').value;
+          var value = fields.querySelector('input:nth-of-type(2)').value;
+          headers[header] = value;
+        });
+        fetch($('#url').value, {
+          method: $('#method').value,
+          mode: 'cors',
+          headers: headers,
+          cache: 'no-cache'
+        }).then(function(resp) {
+          return resp.text();
+        }).then(function(text) {
+          output.innerText = text;
+        }).catch(function(err) {
+          output.innerText = err;
+        });
+      });
+    })();
+  </script>
+</body>
