@@ -1,0 +1,76 @@
+<!--
+Copyright 2016 Google Inc. All Rights Reserved.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+   http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!doctype html>
+<head>
+  <style>
+    :root {
+      font-family: monospace;
+      font-size: 20px;
+    }
+    .template {
+      display: none;
+    }
+    input, select, option {
+      font-family: monospace;
+      font-size: 1rem;
+    }
+    input {
+      border: 0;
+      border-bottom: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+  <select id="method">
+    <option selected>GET</option>
+    <option>POST</option>
+    <option>PUT</option>
+    <option>PATCH</option>
+    <option>HEAD</option>
+    <option>OPTIONS</option>
+  </select> <input type="text" id="url" placeholder="/kitty.jpg"> HTTP/1.1<br>
+    <div>
+      Host: <input type="text" placeholder="www.google.com">
+    </div>
+    <div class="template header">
+      <input type="text" placeholder="X-Forwarded-for">: <input type="text" placeholder="Value">
+      &nbsp;&nbsp;&nbsp;&nbsp;<button>-</button><br>
+    </div>
+    <div>
+    &nbsp;&nbsp;&nbsp;&nbsp;<button id="addheader">+</button>
+    </div>
+  <br>
+  <script>
+    (function() {
+      var $ = document.querySelector.bind(document);
+      var output = $('pre');
+      var deleteHeaderFunc = function(ev) {
+        ev.target.parentElement.parentElement.removeChild(ev.target.parentElement);
+      };
+      $('#addheader').addEventListener('click', function(ev) {
+        var n = $('.header.template').cloneNode(true);
+        n.classList.remove('template');
+        n.querySelector('button').addEventListener('click', deleteHeaderFunc);
+        ev.target.parentElement.parentElement.insertBefore(n, ev.target.parentElement);
+      });
+      $('#send').addEventListener('click', function() {
+        var headers = {};
+        Array.prototype.forEach.call(document.querySelectorAll('.header:not(.template)'), function(fields) {
+          var header = fields.querySelector('input:nth-of-type(1)').value;
+          var value = fields.querySelector('input:nth-of-type(2)').value;
+          headers[header] = value;
+        });
+      });
+    })();
+  </script>
+</body>
