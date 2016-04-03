@@ -95,11 +95,11 @@ var (
 func checkLogin(w http.ResponseWriter, r *http.Request) {
 	c, err := r.Cookie("SESSION_ID")
 	if err != nil {
-		http.Error(w, "Not logged in", http.StatusForbidden)
+		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 		return
 	}
 	if c.Value != "totally_secret" {
-		http.Error(w, "Not logged in", http.StatusForbidden)
+		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 		return
 	}
 }
