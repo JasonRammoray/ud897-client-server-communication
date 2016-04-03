@@ -31,7 +31,7 @@ limitations under the License.
   </style>
 </head>
 <body>
-  fetch("<input type="text" id="url" placeholder="http://www.example.com">", {<br>
+  fetch("http://www.example.com", {<br>
   &nbsp;&nbsp;"method": "
   <select id="method">
     <option selected>GET</option>
@@ -41,11 +41,7 @@ limitations under the License.
     <option>HEAD</option>
     <option>OPTIONS</option>
   </select>",<br>
-  &nbsp;&nbsp;"mode": "
-  <select id="mode">
-    <option selected>cors</option>
-    <option>no-cors</option>
-  </select>",<br>
+  &nbsp;&nbsp;"mode": "cors",<vr>
   &nbsp;&nbsp;"headers": {<br>
     <div class="template header">
       &nbsp;&nbsp;&nbsp;&nbsp;"<input type="text" placeholder="X-Forwarded-for">": "<input type="text" placeholder="Value">",
@@ -83,9 +79,9 @@ limitations under the License.
           var value = fields.querySelector('input:nth-of-type(2)').value;
           headers[header] = value;
         });
-        fetch($('#url').value, {
+        fetch("http://www.example.com", {
           method: $('#method').value,
-          mode: $('#mode').value,
+          mode: cors,
           headers: headers,
           cache: 'no-cache'
         }).then(function(resp) {
