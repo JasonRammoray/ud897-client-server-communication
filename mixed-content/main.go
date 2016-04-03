@@ -43,8 +43,8 @@ var box *rice.Box
 
 func main() {
 	box = rice.MustFindBox("assets")
-	log.Printf("Website w/o TLS will be served on https://127.0.0.1.xip.io:8080")
-	log.Printf("Website w/ TSL will be served on http://127.0.0.1.xip.io:8081")
+	log.Printf("Website w/o TLS will be served on http://127.0.0.1.xip.io:8080")
+	log.Printf("Website w/ TSL will be served on https://127.0.0.1.xip.io:8081")
 
 	h1server := http.Server{
 		Addr:         ":8080",
