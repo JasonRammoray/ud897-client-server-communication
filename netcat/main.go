@@ -30,19 +30,19 @@ var checks []func(r *http.Request) string = []func(r *http.Request) string{
 		if r.Method == "UDACITY" {
 			return ""
 		}
-		return "8617c"
+		return "Error: Not the right HTTP method"
 	},
 	func(r *http.Request) string {
 		if r.Header.Get("X-Udacity-Exercise-Header") != "" {
 			return ""
 		}
-		return "3627c"
+		return "Error: X-Udacity-Exercise-Header missing"
 	},
 	func(r *http.Request) string {
 		if r.Header.Get("Date") == "Wed, 11 Jan 1995 23:00:00 GMT" {
 			return ""
 		}
-		return "80531"
+		return "Error: Wrong Date"
 	},
 }
 
