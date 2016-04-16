@@ -25,3 +25,6 @@ html, body {
 img {
   border: 0;
 }
+picture {
+  line-height: 0;
+}
