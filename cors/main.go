@@ -22,7 +22,7 @@ var box *rice.Box
 
 func main() {
 	box = rice.MustFindBox("assets")
-	log.Printf("Running website on 127.0.0.1.xip.io:8080")
+	log.Printf("Running website on http://127.0.0.1.xip.io:8080")
 	http.Handle("/", http.FileServer(box.HTTPBox()))
 	http.ListenAndServe(":8080", nil)
 }

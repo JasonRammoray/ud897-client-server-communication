@@ -43,8 +43,7 @@ var box *rice.Box
 
 func main() {
 	box = rice.MustFindBox("assets")
-	log.Printf("Website w/o TLS will be served on http://127.0.0.1.xip.io:8080")
-	log.Printf("Website w/ TSL will be served on https://127.0.0.1.xip.io:8081")
+	log.Printf("Website will be served on https://127.0.0.1.xip.io:8081")
 
 	h1server := http.Server{
 		Addr:         ":8080",
@@ -59,7 +58,6 @@ func main() {
 		},
 	}
 	go func(h1server http.Server) {
-		log.Printf("%s", h1server.Addr)
 		ln, err := net.Listen("tcp", h1server.Addr)
 		if err != nil {
 			log.Fatalf("Error opening socket: %s", err)
@@ -71,7 +69,6 @@ func main() {
 
 	h1server.Addr = ":8081"
 	go func(h1server http.Server) {
-		log.Printf("%s", h1server.Addr)
 		if err := configureTLS(&h1server); err != nil {
 			log.Fatalf("Error configuring TLS: %s", err)
 		}

@@ -32,8 +32,8 @@ func main() {
 	)
 	flag.Parse()
 
-	log.Printf("Running decoder server on decoder.127.0.0.1.xip.io:%d", *port)
-	log.Printf("Running bad website on badwebsite.127.0.0.1.xip.io:%d", *port)
+	log.Printf("Running decoder server on http://decoder.127.0.0.1.xip.io:%d", *port)
+	log.Printf("Running bad website on http://badwebsite.127.0.0.1.xip.io:%d", *port)
 
 	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		hostname := strings.Split(r.Host, ":")[0]

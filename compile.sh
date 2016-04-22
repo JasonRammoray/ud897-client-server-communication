@@ -28,3 +28,9 @@ done
 ls binaries/*_windows_*| while read line; do
 	mv $line ${line}.exe
 done
+
+rm -rf binaries/utils*
+
+for platform in $PLATFORMS; do
+	zip ${platform}.zip binaries/*_${platform}*
+done;

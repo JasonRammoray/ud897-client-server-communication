@@ -31,8 +31,8 @@ func main() {
 	box = rice.MustFindBox("assets")
 	os.Mkdir("evil", os.FileMode(0755))
 	log.Printf("Created a folder called \"evil\", all its contents")
-	log.Printf("will be served on evil.127.0.0.1.xip.io:8080")
-	log.Printf("Running bank website on bank.127.0.0.1.xip.io:8080")
+	log.Printf("will be served on http://evil.127.0.0.1.xip.io:8080")
+	log.Printf("Running bank website on http://bank.127.0.0.1.xip.io:8080")
 
 	bank := httptools.NewRegexpSwitch(map[string]http.Handler{
 		"/": http.RedirectHandler("/balance", http.StatusTemporaryRedirect),
@@ -119,9 +119,9 @@ func transfer(w http.ResponseWriter, r *http.Request) {
 	acc.Transfers = append(acc.Transfers, t)
 
 	refUrl, err := url.Parse(r.Referer())
-	if err == nil && strings.HasPrefix(refUrl.Host, "evil.") && t.Recipient == "Evil Corp" {
+	if err == nil && strings.HasPrefix(refUrl.Host, "evil.") && strings.ToLower(t.Recipient) == "umbrella corp" {
 		log.Printf("You made Evil Corp(tm) rich!")
-		log.Printf("The oken is >> %s <<", secret)
+		log.Printf("The token is >> %s <<", secret)
 	}
 	http.Redirect(w, r, "/balance", http.StatusSeeOther)
 }

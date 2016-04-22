@@ -41,7 +41,7 @@ limitations under the License.
     <option>HEAD</option>
     <option>OPTIONS</option>
   </select>",<br>
-  &nbsp;&nbsp;"mode": "cors",<vr>
+  &nbsp;&nbsp;"mode": "cors",<br>
   &nbsp;&nbsp;"headers": {<br>
     <div class="template header">
       &nbsp;&nbsp;&nbsp;&nbsp;"<input type="text" placeholder="X-Forwarded-for">": "<input type="text" placeholder="Value">",
@@ -81,7 +81,7 @@ limitations under the License.
         });
         fetch("http://www.example.com", {
           method: $('#method').value,
-          mode: cors,
+          mode: 'cors',
           headers: headers,
           cache: 'no-cache'
         }).then(function(resp) {

@@ -24,6 +24,7 @@ html, body {
 
 img {
   border: 0;
+  width: 40vw;
 }
 picture {
   line-height: 0;

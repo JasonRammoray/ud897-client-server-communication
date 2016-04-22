@@ -47,7 +47,7 @@ var checks []func(r *http.Request) string = []func(r *http.Request) string{
 }
 
 func main() {
-	log.Printf("Running webserver on netcat.127.0.0.1.xip.io:8080")
+	log.Printf("Running webserver on http://netcat.127.0.0.1.xip.io:8080")
 
 	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := successToken

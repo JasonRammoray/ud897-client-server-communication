@@ -34,5 +34,6 @@ func main() {
 		return nimg
 	}))
 	proxy.Verbose = true
+	log.Printf("Running proxy at localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", proxy))
 }
