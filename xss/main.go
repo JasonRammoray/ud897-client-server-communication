@@ -50,7 +50,9 @@ func main() {
 }
 
 var (
-	secret = "dAZxAgQAAHY="
+	// Generated with:
+	// (p => btoa(new TextDecoder().decode(new TextEncoder().encode(p).map((v, i) => v ^ "DEADBEEF".charCodeAt(i)))))(passphrase)
+	secret = "PC4iIB12d3E="
 )
 
 func decodeServer(w http.ResponseWriter, r *http.Request) {
